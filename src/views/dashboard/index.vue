@@ -7,7 +7,7 @@
         style="width: 100%"
       >
         <el-table-column
-          prop="StockCode"
+          prop="kaNames"
           label="卡片"
         />
         <el-table-column
@@ -15,7 +15,7 @@
           label="数量"
         />
         <el-table-column
-          prop="StockType"
+          prop="rate"
           label="概率"
         />
       </el-table>
@@ -38,7 +38,20 @@ export default {
   methods: {
     getNum() {
       axios.post('https://apipro.playinjoy.com/legion/bstock').then(res => {
-        console.log(res.data.Stock)
+        const kaName = {
+          '101': '浪',
+          '102': '漫',
+          '103': '波',
+          '104': '比'
+        }
+        if (res && res.data && res.data.Stock) {
+          const rates = res.data.MainPool
+          res.data.Stock.map((item, index) => {
+            // 数据处理，把code变为
+            item.kaNames = item.StockType === 2 ? `必中卡(${kaName[item.StockCode]})` : kaName[item.StockCode]
+            item.rate = index > 3 ? '' : rates[index].rate
+          })
+        }
         this.tableData = res.data.Stock
       })
     }
