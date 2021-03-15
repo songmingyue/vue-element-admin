@@ -1,31 +1,52 @@
 <template>
   <div class="dashboard-container">
-    <component :is="currentRole" />
+    <div class="table-watch">
+      <el-table
+        :data="tableData"
+        border
+        style="width: 100%"
+      >
+        <el-table-column
+          prop="StockCode"
+          label="卡片"
+        />
+        <el-table-column
+          prop="StockAmount"
+          label="数量"
+        />
+        <el-table-column
+          prop="StockType"
+          label="概率"
+        />
+      </el-table>
+    </div>
   </div>
 </template>
-
 <script>
-import { mapGetters } from 'vuex'
-import adminDashboard from './admin'
-import editorDashboard from './editor'
-
+import axios from 'axios'
 export default {
   name: 'Dashboard',
-  components: { adminDashboard, editorDashboard },
   data() {
     return {
-      currentRole: 'adminDashboard'
+      tableData: []
     }
   },
-  computed: {
-    ...mapGetters([
-      'roles'
-    ])
-  },
+  computed: {},
   created() {
-    if (!this.roles.includes('admin')) {
-      this.currentRole = 'editorDashboard'
+    this.getNum()
+  },
+  methods: {
+    getNum() {
+      axios.post('https://apipro.playinjoy.com/legion/bstock').then(res => {
+        console.log(res.data.Stock)
+        this.tableData = res.data.Stock
+      })
     }
   }
 }
 </script>
+<style scoped>
+.table-watch {
+  width: 80%;
+}
+</style>
